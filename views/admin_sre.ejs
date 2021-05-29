@@ -1,0 +1,325 @@
+<!-- Bootstrap-->
+<link rel="stylesheet" href="./css/bootstrap.min.css">
+
+<!-- font awesome file -->
+<link rel="stylesheet" href="./css/all.min.css">
+</head>
+<body>
+<!-- Add Brand -->
+<section>
+    <div class="page-header"> <h2 style="color:blueviolet; padding: 2rem; "> Add Brand </h2> </div>
+    <div class="col-lg-3"></div> 
+        <div class="input-group col-lg-9" style="margin-left: 150px;">
+            <input type="text" class="form-control " placeholder="Brand Name" id="ub_name" aria-describedby="basic-addon1">    
+            <input type="url" class="form-control " placeholder="Brand Website" id="ub_web" aria-describedby="basic-addon1">
+            <input class="btn btn-default" style="margin-left: 15px; border: black; border-style: solid" id="ub_logo" type="file" value="Upload Logo">
+            <input class="btn btn-default" style="margin-left: 15px; border: black; border-style: solid" type="submit" id="U_brand" value="Submit">
+        </div>
+</section>
+
+<br><br><hr><br>
+<!-- Add Product -->
+<section>
+    <div class="page-header"> <h2 style="color:blueviolet; padding: 2rem; "> Add Product </h2> </div>
+        <div class="input-group col-lg-12" >
+            <select name="Brand" id="Brand_List1" >
+                <option value="Start"> Select Brand </option>
+            </select>
+            <input type="text" class="form-control " id="up_name" placeholder="Product Name"  aria-describedby="basic-addon1">
+            <input type="text" class="form-control " id="up_flavour" placeholder="Flavour"  aria-describedby="basic-addon1">
+            <input type="text" class="form-control " id="up_quantity" placeholder="Quantity"  aria-describedby="basic-addon1">
+            <input type="number" class="form-control " id="up_mrp" placeholder="MRP"  aria-describedby="basic-addon1">
+            <input class="btn btn-default" style="margin-left: 15px; border: black; border-style: solid" id="up_img" type="file" value="Upload Image">
+            <input class="btn btn-default" style="margin-left: 15px; border: black; border-style: solid" id="up_submit" type="submit" value="Submit">
+        </div>
+</section>
+
+<br><br><hr><br>
+<!-- Delete Brand -->
+<section>
+    <div class="page-header"> <h2 style="color:blueviolet; padding: 2rem; "> Delete Brand </h2> </div>
+    <div class="col-lg-3"></div> 
+        <div class="input-group col-lg-6" style="margin-left: 130px;">
+            <select name="Brand" id="Brand_List2">
+                <option value="Start">Select Brand</option>
+            </select>
+            <input class="btn btn-default" style="margin-left: 15px; border: black; border-style: solid" id="delete_brand"type="submit" value=" Delete">
+        </div>
+</section>
+
+<br><br><hr><br>
+<!-- Delete Product -->
+<section>
+    <div class="page-header"> <h2 style="color:blueviolet; padding: 2rem; "> Delete Product </h2> </div>
+    <div class="col-lg-3"></div> 
+        <div class="input-group col-lg-6" style="margin-left: 130px;">
+            <select name="Brand" id="Brand_List3">
+                <option value="Start">Select Brand</option>
+            </select>
+            <select name="Product" id="Product_List" disabled="disabled">
+                <option value="Start">Select Product</option>
+            </select>
+            <input class="btn btn-default" style="margin-left: 15px; border: black; border-style: solid" id="delete_product" type="submit" value=" Delete">
+        </div>
+</section>
+
+<br><br><br><hr><br>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-storage.js"></script>
+<script src="./js/Fireb.js"></script>
+
+<script>
+    var Upload_brand = document.getElementById('U_brand');
+    var ub_logo = document.getElementById('ub_logo');
+    var ub_name = document.getElementById('ub_name');
+    var ub_web = document.getElementById('ub_web');
+    var ub_file;
+
+    ub_logo.addEventListener('change', function(e){
+        var file = e.target.files[0];
+        ub_file = file;
+        console.log('Changed');
+    });
+
+
+    Upload_brand.addEventListener('click', function(e){
+          
+        var pos = ub_file.name.indexOf(".");
+        var len = ub_file.name.length;
+        var ext =  ub_file.name.slice(pos, len);       
+
+
+        var storageRef = firebase.storage().ref('Brand_logo/'+ ub_name.value + ext);
+        var task = storageRef.put(ub_file);
+
+        task.on('state_changed', 
+
+            function error(err) {
+
+            },
+
+            function complete(){
+
+            }
+            
+        );
+
+        task.then((snapshot) => {
+            setTimeout(function() { window.location.reload();}, 100);
+        });
+        
+
+        db.collection("Brand").add({
+            name: ub_name.value,
+            web: ub_web.value,
+            logo: ub_name.value + ext 
+        })
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+
+    });
+
+    //Brand list....
+    var sel_brand = document.getElementById("Brand_List1");
+    var sel_brand2 = document.getElementById("Brand_List2");
+    var sel_brand3 = document.getElementById("Brand_List3");
+    db.collection("Brand").get().then((querySnapshot) => {
+        querySnapshot.forEach(element => {
+            var opt = document.createElement("option");
+            opt.value = element.data().name;
+            opt.innerHTML = element.data().name;
+            var opt2 = document.createElement("option");
+            opt2.value = element.data().name;
+            opt2.innerHTML = element.data().name;
+            var opt3 = document.createElement("option");
+            opt3.value = element.data().name;
+            opt3.innerHTML = element.data().name;
+            sel_brand.appendChild(opt);  
+            sel_brand2.appendChild(opt2);
+            sel_brand3.appendChild(opt3);                   
+        });
+    })
+    .catch((error) => {
+        console.log("Error getting documents: ", error);
+    });
+
+    //Product List....
+    var prod_list = document.getElementById("Product_List");
+
+    function prod_l(b){
+        prod_list.innerHTML = '<option value="Start">Select Product</option>';
+        db.collection("Products").where("Brand", "==", b)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+                var opt = document.createElement("option");
+                opt.value = element.id;
+                opt.innerHTML = element.data().name + ', ' + element.data().flavour + ', ' + element.data().quantity;
+                prod_list.appendChild(opt);
+            })
+        })
+    }
+
+    sel_brand3.addEventListener('change', function(e){
+        if(sel_brand3.value != "Start")
+        {
+            prod_list.disabled = false;
+            prod_l(sel_brand3.value);
+        }
+        else    
+            prod_list.disabled = true;
+    })
+
+    
+
+
+    //Add Product....
+    var up_name = document.getElementById("up_name");
+    var up_flavour = document.getElementById("up_flavour");
+    var up_quantity = document.getElementById("up_quantity");
+    var up_mrp = document.getElementById("up_mrp"); 
+    var up_submit = document.getElementById("up_submit");
+    var up_img = document.getElementById("up_img");
+    var up_imgf
+
+    up_img.addEventListener('change', function(e){
+        up_imgf = e.target.files[0];
+        console.log("changed");
+    });
+
+    up_submit.addEventListener('click', function(e){
+        var pos = up_imgf.name.indexOf(".");
+        var len = up_imgf.name.length;
+        var ext = up_imgf.name.slice(pos, len);
+
+        var storageRef = firebase.storage().ref('Product_img/' + up_name.value + '_' + up_flavour.value + '_' + up_quantity.value + ext);
+        var task = storageRef.put(up_imgf);
+
+        task.on('state_changed', 
+            function error(err){
+                console.log(err);
+            },
+
+            function complete(){
+
+            }
+        )
+
+        task.then((snapshot) => {
+            setTimeout(function() {window.location.reload();},100);
+        })
+
+        db.collection("Products").add({
+            Brand: sel_brand.value,
+            flavour: up_flavour.value,
+            image: up_name.value + '_' + up_flavour.value + '_' + up_quantity.value + ext,
+            mrp: up_mrp.value,
+            name: up_name.value,
+            quantity: up_quantity.value,
+            timestamp: Date.now()
+        })
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+    });
+
+
+    //Delete brand....
+    var del_brand = document.getElementById('delete_brand');
+
+    del_brand.addEventListener('click', function(e){
+        if(sel_brand2.value == "Start")
+        {
+            alert("Select a valid brand");
+        }
+        else
+        {
+            db.collection("Products").where("Brand", "==", sel_brand2.value).get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((element) => {
+                    var stor_del = storage.ref().child('Product_img/' + element.data().image);
+                    stor_del.delete().then(()=>{
+                        db.collection('Products').doc(element.id).delete()
+                        .then(() => {
+                            console.log('Deleted Product');
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                    })
+                    .catch((error)=>{
+                        console.log(error);
+                    })
+                })
+            })
+            
+
+            db.collection("Brand").where("name", "==", sel_brand2.value).get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((element) => {
+                    var stor_del = storage.ref().child('Brand_logo/' + element.data().logo);
+                    stor_del.delete().then(()=> {
+                        db.collection("Brand").doc(element.id).delete()
+                        .then(() => {
+                            console.log('Deleted Brand');
+                            setTimeout(function(){window.location.reload();}, 100)
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                    })
+                })
+                
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+        }
+    });
+
+
+    //Delete Product....
+    var del_prod = document.getElementById('delete_product');
+
+    del_prod.addEventListener('click', function() {
+       if(sel_brand3.value == "Start" || prod_list.value == "Start") 
+       {
+           alert('Select a Valid Product');
+       }
+       else
+       {
+            db.collection("Products").doc(prod_list.value).get()
+            .then((element) => {
+                var stor_del = storage.ref().child('Product_img/' + element.data().image);
+                stor_del.delete().then(()=>{
+                    db.collection('Products').doc(element.id).delete()
+                    .then(() => {
+                        console.log('Deleted Product');
+                        setTimeout(function(){window.location.reload();}, 100);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+                })
+                .catch((error)=>{
+                    console.log(error);
+                })
+            })
+        }
+    });
+    
+</script>
